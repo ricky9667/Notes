@@ -57,15 +57,20 @@ public class MainActivity extends AppCompatActivity {
         super.onOptionsItemSelected(item);
 
         switch (item.getItemId()) {
-            case R.id.addNote:
+            case R.id.addItem:
                 Toast.makeText(this, "Add note", Toast.LENGTH_SHORT).show();
                 return true;
-            case R.id.clearAllNotes:
-                Toast.makeText(this, "Clear all notes", Toast.LENGTH_SHORT).show();
+            case R.id.settingsItem:
+                Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.aboutItem:
+                Toast.makeText(this, "About", Toast.LENGTH_SHORT).show();
                 return true;
             default:
                 Toast.makeText(this, "Error???", Toast.LENGTH_SHORT).show();
                 return false;
         }
     }
+
+    // long click: alert dialog ask if delete item
 }
