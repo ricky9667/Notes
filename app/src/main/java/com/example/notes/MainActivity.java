@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
@@ -23,6 +24,13 @@ public class MainActivity extends AppCompatActivity {
     ListView notesListView;
     ArrayList<String> notes;
 
+    public void openNoteActivity(int index) {
+
+        Intent intent = new Intent(getApplicationContext(), NoteActivity.class);
+        intent.putExtra("note", notes.get(index));
+        startActivity(intent);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,7 +47,8 @@ public class MainActivity extends AppCompatActivity {
         notesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(MainActivity.this, notes.get(position), Toast.LENGTH_SHORT).show();
+
+                openNoteActivity(position);
             }
         });
     }
