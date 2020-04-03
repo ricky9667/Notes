@@ -1,10 +1,14 @@
 package com.example.notes;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -38,5 +42,30 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, notes.get(position), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    // menu setup
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        super.onOptionsItemSelected(item);
+
+        switch (item.getItemId()) {
+            case R.id.addNote:
+                Toast.makeText(this, "Add note", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.clearAllNotes:
+                Toast.makeText(this, "Clear all notes", Toast.LENGTH_SHORT).show();
+                return true;
+            default:
+                Toast.makeText(this, "Error???", Toast.LENGTH_SHORT).show();
+                return false;
+        }
     }
 }
