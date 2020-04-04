@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:id="@+id/addItem" android:title="Add Note" />
-    <item android:id="@+id/settingsItem" android:title="Settings" />
-    <item android:id="@+id/aboutItem" android:title="About" />
+    <item
+        android:id="@+id/addItem"
+        android:icon="@drawable/ic_add"
+        android:title="Add Note" />
+    <item
+        android:id="@+id/aboutItem"
+        android:icon="@drawable/ic_about"
+        android:title="About" />
 
 </menu>

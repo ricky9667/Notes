@@ -2,6 +2,9 @@ package com.example.notes;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -15,7 +18,12 @@ public class NoteActivity extends AppCompatActivity {
     EditText editText;
 
     public void copyFunction(View view) {
-        Toast.makeText(this, "Not Ready Yet!", Toast.LENGTH_SHORT).show();
+        ClipboardManager clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText("copiedString", editText.getText().toString());
+
+        if (clipboardManager != null) {
+            clipboardManager.setPrimaryClip(clip);
+        }
     }
 
     @Override
@@ -35,7 +43,6 @@ public class NoteActivity extends AppCompatActivity {
         editText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
@@ -47,7 +54,6 @@ public class NoteActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-
             }
         });
     }

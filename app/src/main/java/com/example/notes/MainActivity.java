@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -19,6 +20,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -36,8 +38,12 @@ public class MainActivity extends AppCompatActivity {
         sharedPreferences = this.getSharedPreferences("com.example.notes", Context.MODE_PRIVATE);
         notesListView = findViewById(R.id.notesListView);
 
-        notes.add("Select note to edit");
-        notes.add("Hold note to delete");
+        try {
+            notes = (ArrayList<String>) ObjectSerializer.deserialize(
+                    sharedPreferences.getString("notes", ObjectSerializer.serialize(new ArrayList<String>())));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         resetCountText();
 
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, notes);
@@ -53,12 +59,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // ListView item long click: delete note
+        // ListView item long click: delete note with alert dialog
         notesListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-                AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this).setIcon(android.R.drawable.ic_dialog_alert);
-                alert.setTitle("Delete Note").setMessage("Are you sure you want to delete this entire note?");
+                AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
+
+                alert.setIcon(android.R.drawable.ic_menu_delete)
+                     .setTitle("Delete Note")
+                     .setMessage("Are you sure you want to delete this note?");
+
                 alert.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -67,14 +77,20 @@ public class MainActivity extends AppCompatActivity {
                         adapter.notifyDataSetChanged();
                     }
                 }).setNegativeButton("Cancel", null);
-                alert.show();
 
+                alert.show();
                 return true;
             }
         });
     }
 
-    // menu setup
+    @Override
+    protected void onPause() {
+        super.onPause();
+        saveNotes();
+    }
+
+    // Menu setup
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -82,39 +98,66 @@ public class MainActivity extends AppCompatActivity {
         return super.onCreateOptionsMenu(menu);
     }
 
+    // Menu item click
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         super.onOptionsItemSelected(item);
 
         switch (item.getItemId()) {
             case R.id.addItem:
-                int noteId = notes.size();
                 notes.add("");
+                startNoteActivity(notes.size() - 1);
                 resetCountText();
-                startNoteActivity(noteId);
-                return true;
-            case R.id.settingsItem:
-                Toast.makeText(this, "Settings: Not ready yet!", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.aboutItem:
                 Toast.makeText(this, "About: Not ready yet!", Toast.LENGTH_SHORT).show();
                 return true;
             default:
-                Toast.makeText(this, "Error???", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
                 return false;
         }
     }
 
-    // long click: alert dialog ask if delete item
-
+    // Start NoteActivity with index
     public void startNoteActivity(int index) {
         Intent intent = new Intent(getApplicationContext(), NoteActivity.class);
         intent.putExtra("noteId", index);
         startActivity(intent);
     }
 
+    // Reset "Number of notes: "
     public void resetCountText() {
         TextView countTextView = findViewById(R.id.countTextView);
         countTextView.setText("Number of notes: " + notes.size());
+    }
+
+    public void saveNotes() {
+        try {
+            sharedPreferences.edit().putString("notes", ObjectSerializer.serialize(notes)).apply();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // delete all notes
+    public void deleteAll(View view) {
+
+        AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
+
+        alert.setIcon(android.R.drawable.ic_delete)
+                .setTitle("Delete All Notes")
+                .setMessage("Are you sure you want to delete all your notes?");
+
+        alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                notes.clear();
+                resetCountText();
+                adapter.notifyDataSetChanged();
+            }
+        }).setNegativeButton("No", null);
+
+        alert.show();
+
     }
 }
