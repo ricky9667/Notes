@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -21,16 +22,9 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     SharedPreferences sharedPreferences;
-    ListView notesListView;
-    static ArrayList<String> notes;
+    static ArrayList<String> notes = new ArrayList<>();
     static ArrayAdapter<String> adapter;
-
-    public void openNoteActivity(int index) {
-
-        Intent intent = new Intent(getApplicationContext(), NoteActivity.class);
-        intent.putExtra("noteId", index);
-        startActivity(intent);
-    }
+    ListView notesListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,8 +34,9 @@ public class MainActivity extends AppCompatActivity {
         sharedPreferences = this.getSharedPreferences("com.example.notes", Context.MODE_PRIVATE);
         notesListView = findViewById(R.id.notesListView);
 
-        notes = new ArrayList<>();
-        notes.add("Blank Note");
+        notes.add("Select to edit note");
+        notes.add("Hold to delete note");
+        setCountText(notes.size());
 
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, notes);
         notesListView.setAdapter(adapter);
@@ -67,7 +62,11 @@ public class MainActivity extends AppCompatActivity {
 
         switch (item.getItemId()) {
             case R.id.addItem:
-                Toast.makeText(this, "Add note", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(this, "Add note", Toast.LENGTH_SHORT).show();
+                int noteId = notes.size();
+                notes.add("");
+                setCountText(notes.size());
+                openNoteActivity(noteId);
                 return true;
             case R.id.settingsItem:
                 Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show();
@@ -82,4 +81,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // long click: alert dialog ask if delete item
+
+    public void openNoteActivity(int index) {
+        Intent intent = new Intent(getApplicationContext(), NoteActivity.class);
+        intent.putExtra("noteId", index);
+        startActivity(intent);
+    }
+
+    public void setCountText(int count) {
+        TextView countTextView = findViewById(R.id.countTextView);
+        countTextView.setText("Number of notes: " + count);
+    }
 }
