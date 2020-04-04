@@ -1,9 +1,11 @@
 package com.example.notes;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -34,16 +36,40 @@ public class MainActivity extends AppCompatActivity {
         sharedPreferences = this.getSharedPreferences("com.example.notes", Context.MODE_PRIVATE);
         notesListView = findViewById(R.id.notesListView);
 
-        notes.add("Select to edit note");
-        notes.add("Hold to delete note");
-        setCountText(notes.size());
+        notes.add("Select note to edit");
+        notes.add("Hold note to delete");
+        resetCountText();
 
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, notes);
+
+        // ListView setup
         notesListView.setAdapter(adapter);
+
+        // ListView item click: edit note
         notesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                openNoteActivity(position);
+                startNoteActivity(position);
+            }
+        });
+
+        // ListView item long click: delete note
+        notesListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this).setIcon(android.R.drawable.ic_dialog_alert);
+                alert.setTitle("Delete Note").setMessage("Are you sure you want to delete this entire note?");
+                alert.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        notes.remove(position);
+                        resetCountText();
+                        adapter.notifyDataSetChanged();
+                    }
+                }).setNegativeButton("Cancel", null);
+                alert.show();
+
+                return true;
             }
         });
     }
@@ -62,17 +88,16 @@ public class MainActivity extends AppCompatActivity {
 
         switch (item.getItemId()) {
             case R.id.addItem:
-//                Toast.makeText(this, "Add note", Toast.LENGTH_SHORT).show();
                 int noteId = notes.size();
                 notes.add("");
-                setCountText(notes.size());
-                openNoteActivity(noteId);
+                resetCountText();
+                startNoteActivity(noteId);
                 return true;
             case R.id.settingsItem:
-                Toast.makeText(this, "Settings", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Settings: Not ready yet!", Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.aboutItem:
-                Toast.makeText(this, "About", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "About: Not ready yet!", Toast.LENGTH_SHORT).show();
                 return true;
             default:
                 Toast.makeText(this, "Error???", Toast.LENGTH_SHORT).show();
@@ -82,14 +107,14 @@ public class MainActivity extends AppCompatActivity {
 
     // long click: alert dialog ask if delete item
 
-    public void openNoteActivity(int index) {
+    public void startNoteActivity(int index) {
         Intent intent = new Intent(getApplicationContext(), NoteActivity.class);
         intent.putExtra("noteId", index);
         startActivity(intent);
     }
 
-    public void setCountText(int count) {
+    public void resetCountText() {
         TextView countTextView = findViewById(R.id.countTextView);
-        countTextView.setText("Number of notes: " + count);
+        countTextView.setText("Number of notes: " + notes.size());
     }
 }
