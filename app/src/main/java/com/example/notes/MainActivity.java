@@ -22,12 +22,13 @@ public class MainActivity extends AppCompatActivity {
 
     SharedPreferences sharedPreferences;
     ListView notesListView;
-    ArrayList<String> notes;
+    static ArrayList<String> notes;
+    static ArrayAdapter<String> adapter;
 
     public void openNoteActivity(int index) {
 
         Intent intent = new Intent(getApplicationContext(), NoteActivity.class);
-        intent.putExtra("note", notes.get(index));
+        intent.putExtra("noteId", index);
         startActivity(intent);
     }
 
@@ -42,12 +43,11 @@ public class MainActivity extends AppCompatActivity {
         notes = new ArrayList<>();
         notes.add("Blank Note");
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, notes);
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, notes);
         notesListView.setAdapter(adapter);
         notesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
                 openNoteActivity(position);
             }
         });
