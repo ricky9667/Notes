@@ -66,8 +66,8 @@ public class MainActivity extends AppCompatActivity {
                 AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
 
                 alert.setIcon(android.R.drawable.ic_menu_delete)
-                     .setTitle("Delete Note")
-                     .setMessage("Are you sure you want to delete this note?");
+                        .setTitle("Delete Note")
+                        .setMessage("Are you sure you want to delete this note?");
 
                 alert.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
                     @Override
@@ -106,11 +106,13 @@ public class MainActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.addItem:
                 notes.add("");
+                adapter.notifyDataSetChanged();
                 startNoteActivity(notes.size() - 1);
                 resetCountText();
                 return true;
             case R.id.aboutItem:
-                Toast.makeText(this, "About: Not ready yet!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Just kidding :)", Toast.LENGTH_SHORT).show();
+                Log.i("Notes Information", notes.get(notes.size() - 1));
                 return true;
             default:
                 Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
@@ -144,20 +146,22 @@ public class MainActivity extends AppCompatActivity {
 
         AlertDialog.Builder alert = new AlertDialog.Builder(MainActivity.this);
 
-        alert.setIcon(android.R.drawable.ic_delete)
-                .setTitle("Delete All Notes")
-                .setMessage("Are you sure you want to delete all your notes?");
+        if (notes.size() > 0) {
+            alert.setIcon(android.R.drawable.ic_delete)
+                    .setTitle("Delete All Notes")
+                    .setMessage("Are you sure you want to delete all your notes?");
 
-        alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                notes.clear();
-                resetCountText();
-                adapter.notifyDataSetChanged();
-            }
-        }).setNegativeButton("No", null);
-
-        alert.show();
-
+            alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    notes.clear();
+                    resetCountText();
+                    adapter.notifyDataSetChanged();
+                }
+            }).setNegativeButton("No", null);
+            alert.show();
+        } else {
+            Toast.makeText(this, "You don't have any notes", Toast.LENGTH_SHORT).show();
+        }
     }
 }

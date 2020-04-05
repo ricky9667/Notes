@@ -16,6 +16,7 @@ import android.widget.Toast;
 public class NoteActivity extends AppCompatActivity {
 
     EditText editText;
+    int noteId;
 
     public void copyFunction(View view) {
         ClipboardManager clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
@@ -23,6 +24,7 @@ public class NoteActivity extends AppCompatActivity {
 
         if (clipboardManager != null) {
             clipboardManager.setPrimaryClip(clip);
+            Toast.makeText(this, "Copied note to clipboard", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -33,9 +35,8 @@ public class NoteActivity extends AppCompatActivity {
 
         editText = findViewById(R.id.noteEditText);
 
-        Intent intent = getIntent();
+        noteId = getIntent().getIntExtra("noteId", -1);
 
-        int noteId = intent.getIntExtra("noteId", -1);
         if (noteId != -1) {
             editText.setText(MainActivity.notes.get(noteId));
         }
@@ -47,14 +48,17 @@ public class NoteActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                int noteId = getIntent().getIntExtra("noteId", -1);
-                MainActivity.notes.set(noteId, String.valueOf(s));
-                MainActivity.adapter.notifyDataSetChanged();
+                saveText(String.valueOf(s));
             }
 
             @Override
             public void afterTextChanged(Editable s) {
             }
         });
+    }
+
+    public void saveText(String text) {
+        MainActivity.notes.set(noteId, text);
+        MainActivity.adapter.notifyDataSetChanged();
     }
 }
